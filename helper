@@ -1,0 +1,67 @@
+#!/bin/bash
+
+
+function startMongos() {
+supervisorctl start mongos
+if [ "$?" != "0" ]; then
+    return 1
+  fi
+  return 0
+}
+
+function startsupervisor() {
+  service supervisor start
+  if [ "$?" != "0" ]; then
+    return 1
+  fi
+  return 0
+}
+
+function setconfigserv() {
+  mongo --port=27001 < /etc/mongodb/configsrv.js
+  if [ "$?" != "0" ]; then
+    return 1
+  fi
+  return 0
+}
+
+function setreplA() {
+  mongo --port=29001 < /etc/mongodb/replsetA.js
+  if [ "$?" != "0" ]; then
+    return 1
+  fi
+  return 0
+}
+
+function setmongos() {
+  mongo --port=28001 < /etc/mongodb/mongos.js
+  if [ "$?" != "0" ]; then
+    return 1
+  fi
+  return 0
+}
+
+
+function main() {
+
+    echo "Starting up Servers for Mongo Cluster".
+    startsupervisor || err_exit "Start supervisor failed"
+    sleep 15s
+    setconfigserv || err_exit "Could not configure Config Servers."
+    sleep 2s
+    setreplA || err_exit "Could not configure Config Servers."
+    echo "All Set. Now start Mongos server".
+    startMongos || err_exit "Could not start mongos."
+    sleep 30s
+    setmongos || err_exit "Could not start mongos."
+    tail -f /var/log/mongo/mongos_stdout.log
+}
+
+function error_exit
+{
+ echo "$TXT_ERROR$1$txtrst" | 1>&2
+ exit 1
+}
+
+main
+
