@@ -31,6 +31,6 @@ You can simple connect to mongos by mongo cli using:
 mongo --port=28001
 ```
 ## Additional Info:
-[Deploy a shard](https://docs.mongodb.com/manual/tutorial/deploy-shard-cluster/)
+[Deploy a shard](https://docs.mongodb.com/manual/tutorial/deploy-shard-cluster/)  
 [Deploy a  Replica](https://docs.mongodb.com/manual/tutorial/deploy-replica-set/)
 
